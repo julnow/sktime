@@ -11,6 +11,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
+import os
 
 from sktime.datatypes import convert_to
 from sktime.transformations.base import BaseTransformer
@@ -461,13 +462,7 @@ class Catch22(BaseTransformer):
         threads_to_use = check_n_jobs(self.n_jobs)
 
         if self.n_jobs == -1:
-            threads_to_use = 1
-            warnings.warn(
-                "``n_jobs`` default was changed to 1 from -1 in version 0.13.4. "
-                "In version 0.15 a value of -1 will use all CPU cores instead of the "
-                "current 1 CPU core.",
-                stacklevel=2,
-            )
+            threads_to_use = os.cpu_count()
 
         c22_list = Parallel(n_jobs=threads_to_use)(
             delayed(self._transform_case_single)(
